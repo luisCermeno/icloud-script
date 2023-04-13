@@ -90,9 +90,9 @@ def inject_meta(folder):
           print(f"Error running command '{command}': {error}")
   print('Metadata injected sucessfully!')
 
-def move_photos(source, destination):
+def move_shared(source, destination):
   """
-  Moves all photos and shared albums (zips) from source to destination.
+  Moves all shared albums (zips) from source to destination.
   """
   for f in os.listdir(source):
     if f.endswith('.zip'):
@@ -104,6 +104,10 @@ def move_photos(source, destination):
       # Move the file
       shutil.move(this_source, this_destination)
 
+def move_photos(source, destination):
+  """
+  Moves all photos from source to destination.
+  """ 
   source = source + '/Photos'
   print(f'Moving photos from {source} to {destination}')
   # Read files
@@ -114,6 +118,12 @@ def move_photos(source, destination):
       this_destination = destination + '/' + f
       # Move the file
       shutil.move(this_source, this_destination)
+
+def move_folder(folder, destination):
+  """
+    Moves folder to destination
+  """
+  shutil.move(folder, destination, copy_function = shutil.copytree)
 
 def main():
   intro = 'Thank you for using the iCloud Photo Library Extraction Tool\nAuthor: Luis Cermeno\nDate of release: 04/12/2023\n'
@@ -135,6 +145,12 @@ def main():
     print('\n')
   destination = destination.strip() # Get rid of trailing whitespaces
   destination = destination.replace('\\ ', ' ') # Get rid of backslash characters to avoid issues with listdir
+  # Make subfolders for metadata and shared albums
+  shared = destination + '/' + 'shared'
+  extracts = destination + '/' + 'extract'
+  os.mkdir(shared)
+  os.mkdir(extracts)
+
 
   # Get all zip files ignoring hidden files
   print(f'Reading zip files from {root}...')
@@ -156,7 +172,8 @@ def main():
     inject_meta(extracted)
     # Move photos to root
     move_photos(extracted,destination)
-    # Delete extracted folder
-    shutil.rmtree(extracted) #os.remove yields operation not permitted error!
+    move_shared(extracted, shared)
+    # Clean up: move leftover to extracts
+    move_folder(extracted, extracts)
 
 main()
