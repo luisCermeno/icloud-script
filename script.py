@@ -7,6 +7,12 @@ import subprocess
 from zipfile import ZipFile
 import shutil
 
+"""
+iCloud Photo Library Extraction Tool
+Author: Luis Cermeno
+Date of release: 04/12/2023
+"""
+
 def convert_time(time):
   """
   Input: 'DDDDD MMMMM DD,YYYY H:MM AM/PM GMT'
@@ -100,11 +106,13 @@ def move_photos(source, destination):
       shutil.move(this_source, this_destination)
 
 def main():
+  intro = 'Thank you for using the iCloud Photo Library Extraction Tool\nAuthor: Luis Cermeno\nDate of release: 04/12/2023\n'
+  print(intro)
   root = ''
   while len(root) == 0:
-    print('Please enter a valid address where your zip files are.')
-    print('(You can also drag and drp the folder)')
-    root = input('ADDRESS: ')
+    print('Please enter the folder path that contain your zip files.')
+    print('(You can also drag and drop the folder below, and then hit Enter)')
+    root = input('> ')
     print('\n')
   root = root.strip() # Get rid of trailing whitespaces
   root = root.replace('\\ ', ' ') # Get rid of backslash characters to avoid issues with listdir
