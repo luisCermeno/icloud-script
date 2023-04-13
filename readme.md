@@ -1,6 +1,6 @@
 # iCloud Photo Library Extraction Tool
 
-A **Python script** that extracts your iCloud Photo Library and updates important metadata such as **creation date** to each photo.
+Powerful **Python script** designed to extract your iCloud Photo Library and update crucial metadata for each photo, including the creation date.
 
 ![Terminal](terminal.png "Execution of the tool")
 
