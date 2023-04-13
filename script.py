@@ -31,23 +31,37 @@ def inject_meta(folder):
   Example:
   inject_meta('/Users/luiscermeno/Desktop/data/iCloud Photos Part 34 of 34')
   """
+  # Add Photos subfolder (this is the way Apple delivers data as of April 2023)
+  folder = folder + '/Photos'
+  print(f'Injecting metadata to {folder}.')
 
-  print(f'Injecting metadata to {folder}')
-  # Read the data from cvs database
-  print('Reading data from Photo Library.csv...')
-  data = open(folder + '/Photos/' + 'Photo Details.csv')
-  csvreader = csv.reader(data)
-  # Extract field names and create dictionary
-  headers = []
-  headers = next(csvreader) # reads row and advances to next row
-  # Extract records
+  # Get all csv databases ignoring hidden files
+  print(f'Reading csv files from {folder}...')
+  csvs = []
+  for x in os.listdir(folder):
+    if x.endswith('.csv'):
+          csvs.append(folder + '/' + x)
+  print('Csvs files read successfully')
+
+  # Read the data from each database
   metadata = {} #{FILENAME: {metadata for file}}
-  for row in csvreader:
-    mp = {}
-    for i in range(1, len(row)):
-      mp[headers[i]] = row[i]
-    metadata[row[0]] = mp
-  data.close()
+  for database in csvs:
+    print(f'Reading data from {database}')
+    # Open database
+    data = open(database)
+    csvreader = csv.reader(data)
+    # Extract field names
+    headers = []
+    headers = next(csvreader) # reads row and advances to next row
+    # Extract records
+    for row in csvreader:
+      # Create entry
+      mp = {}
+      for i in range(1, len(row)):
+        mp[headers[i]] = row[i]
+      metadata[row[0]] = mp
+    # Close database
+    data.close()
   print('Data read successfully')
 
   # Make the list of commands to run
@@ -55,7 +69,7 @@ def inject_meta(folder):
   commands = []
   for f in metadata.keys():
     time = convert_time(metadata[f]['originalCreationDate'])
-    commands.append(f"SetFile -d '{time}' {folder}/Photos/{f}")
+    commands.append(f"SetFile -d '{time}' {folder}/{f}")
 
   # Run each command
   print('Rewriting metadata...')
@@ -69,7 +83,7 @@ def inject_meta(folder):
           break
   print('Metadata injected sucessfully!')
 
-  
+
 root = r''
 while len(root) == 0:
   print('Please enter the address where your zip files are.')
@@ -79,14 +93,13 @@ while len(root) == 0:
 root = root.strip()
 root = root.replace('\\ ', ' ') # Get rid of backslashes characters to avoid issues with listdir
 
-# Get all filenames ignoring hidden files
+# Get all zip files ignoring hidden files
 print(f'Reading zip files from {root}...')
 zips = []
 for x in os.listdir(root):
   if not x.startswith('.') and not x.endswith('.py') and not x.endswith('.csv'):
-        zips.append(root + '/' + x)
+    zips.append(root + '/' + x)
 print('Zip files read successfully')
-print(zips)
 
 # For each zip file:
 for i,z in enumerate(zips):
