@@ -84,28 +84,32 @@ def inject_meta(folder):
   print('Metadata injected sucessfully!')
 
 
-root = r''
-while len(root) == 0:
-  print('Please enter the address where your zip files are.')
-  print('(You can also drag and drp the folder)')
-  root = input('ADDRESS: ')
-  print('\n')
-root = root.strip()
-root = root.replace('\\ ', ' ') # Get rid of backslashes characters to avoid issues with listdir
+def main():
+  root = ''
+  while len(root) == 0:
+    print('Please enter a valid address where your zip files are.')
+    print('(You can also drag and drp the folder)')
+    root = input('ADDRESS: ')
+    print('\n')
+  root = root.strip() # Get rid of trailing whitespaces
+  root = root.replace('\\ ', ' ') # Get rid of backslash characters to avoid issues with listdir
 
-# Get all zip files ignoring hidden files
-print(f'Reading zip files from {root}...')
-zips = []
-for x in os.listdir(root):
-  if not x.startswith('.') and not x.endswith('.py') and not x.endswith('.csv'):
-    zips.append(root + '/' + x)
-print('Zip files read successfully')
+  # Get all zip files ignoring hidden files
+  print(f'Reading zip files from {root}...')
+  zips = []
+  for x in os.listdir(root):
+    if not x.startswith('.') and not x.endswith('.py') and not x.endswith('.csv'):
+      zips.append(root + '/' + x)
+  print('Zip files read successfully')
 
-# For each zip file:
-for i,z in enumerate(zips):
-  print(f'Extracting from {z}...')
-  # Extract zip
-  with ZipFile(z) as zObject:
-    zObject.extractall(path = root)
-  # Inject metadata to zip
-    inject_meta(z.replace('.zip',''))
+  # For each zip file:
+  for i,z in enumerate(zips):
+    print('\n')
+    print(f'Extracting from {z}...')
+    # Extract zip
+    with ZipFile(z) as zObject:
+      zObject.extractall(path = root)
+    # Inject metadata to zip
+      inject_meta(z.replace('.zip',''))
+
+main()
