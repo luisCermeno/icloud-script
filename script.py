@@ -12,7 +12,7 @@ iCloud Photo Library Extraction Tool
 Author: Luis Cermeno
 Date of release: 04/12/2023
 """
-
+cmd = []
 def convert_time(time):
   """
   Input: 'DDDDD MMMMM DD,YYYY H:MM AM/PM GMT'
@@ -78,6 +78,7 @@ def inject_meta(folder):
     time = convert_time(metadata[f]['originalCreationDate'])
     commands.append(f"SetFile -d '{time}' {folder}/{f}")
 
+  cmd.append(commands)
   # Run each command
   print('Rewriting metadata...')
   for command in commands:
@@ -87,7 +88,6 @@ def inject_meta(folder):
       output, error = process.communicate()
       if process.returncode != 0:
           print(f"Error running command '{command}': {error}")
-          break
   print('Metadata injected sucessfully!')
 
 def move_photos(source, destination):
@@ -117,16 +117,25 @@ def main():
   root = root.strip() # Get rid of trailing whitespaces
   root = root.replace('\\ ', ' ') # Get rid of backslash characters to avoid issues with listdir
 
+  destination = ''
+  while len(destination) == 0:
+    print('Please enter the destination path where you want your photos to be collected.')
+    print('(You can also drag and drop the folder below, and then hit Enter)')
+    destination = input('> ')
+    print('\n')
+  destination = destination.strip() # Get rid of trailing whitespaces
+  destination = destination.replace('\\ ', ' ') # Get rid of backslash characters to avoid issues with listdir
+
   # Get all zip files ignoring hidden files
   print(f'Reading zip files from {root}...')
   zips = []
   for x in os.listdir(root):
-    if not x.startswith('.') and not x.endswith('.py') and not x.endswith('.csv'):
+    if x.endswith('.zip'):
       zips.append(root + '/' + x)
   print('Zip files read successfully')
 
   # For each zip file:
-  for i,z in enumerate(zips):
+  for z in sorted(zips):
     print('\n')
     print(f'Extracting from {z}...')
     # Extract zip
@@ -136,8 +145,15 @@ def main():
     # Inject metadata to photos in extracted folder
     inject_meta(extracted)
     # Move photos to root
-    move_photos(extracted,root)
+    move_photos(extracted,destination)
     # Delete extracted folder
-    shutil.rmtree(extracted) #os.remove yields operation not permitted error!
+    # shutil.rmtree(extracted) #os.remove yields operation not permitted error!
+    # Output all commands run
+    out = open('out.txt','w')
+    for commands in cmd:
+      for c in commands:
+        out.write(c + '\n')
+      out.write('\n')
+    out.close()
 
 main()
