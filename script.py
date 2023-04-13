@@ -12,7 +12,8 @@ iCloud Photo Library Extraction Tool
 Author: Luis Cermeno
 Date of release: 04/12/2023
 """
-cmd = []
+shared = [0]
+
 def convert_time(time):
   """
   Input: 'DDDDD MMMMM DD,YYYY H:MM AM/PM GMT'
@@ -78,7 +79,6 @@ def inject_meta(folder):
     time = convert_time(metadata[f]['originalCreationDate'])
     commands.append(f"SetFile -d '{time}' {folder}/{f}")
 
-  cmd.append(commands)
   # Run each command
   print('Rewriting metadata...')
   for command in commands:
@@ -92,8 +92,18 @@ def inject_meta(folder):
 
 def move_photos(source, destination):
   """
-  Moves all photos from source to destination.
+  Moves all photos and shared albums (zips) from source to destination.
   """
+  for f in os.listdir(source):
+    if f.endswith('.zip'):
+      print(f'Found shared album. Moving from {source} to {destination}')
+      shared[0] += 1
+      # Construct source and destination paths
+      this_source = source + '/' + f
+      this_destination = destination + '/' + f.replace('.zip',f'{str(shared[0])}.zip')
+      # Move the file
+      shutil.move(this_source, this_destination)
+
   source = source + '/Photos'
   print(f'Moving photos from {source} to {destination}')
   # Read files
@@ -147,13 +157,6 @@ def main():
     # Move photos to root
     move_photos(extracted,destination)
     # Delete extracted folder
-    # shutil.rmtree(extracted) #os.remove yields operation not permitted error!
-    # Output all commands run
-    out = open('out.txt','w')
-    for commands in cmd:
-      for c in commands:
-        out.write(c + '\n')
-      out.write('\n')
-    out.close()
+    shutil.rmtree(extracted) #os.remove yields operation not permitted error!
 
 main()
