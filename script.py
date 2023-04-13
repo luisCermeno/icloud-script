@@ -5,6 +5,7 @@ import csv
 from datetime import datetime, timedelta
 import subprocess
 from zipfile import ZipFile
+import shutil
 
 def convert_time(time):
   """
@@ -83,6 +84,20 @@ def inject_meta(folder):
           break
   print('Metadata injected sucessfully!')
 
+def move_photos(source, destination):
+  """
+  Moves all photos from source to destination.
+  """
+  source = source + '/Photos'
+  print(f'Moving photos from {source} to {destination}')
+  # Read files
+  for f in os.listdir(source):
+    if not f.startswith('.') and not f.endswith('.csv'):
+      # Construct source and destination paths
+      this_source = source + '/' + f
+      this_destination = destination + '/' + f
+      # Move the file
+      shutil.move(this_source, this_destination)
 
 def main():
   root = ''
@@ -109,7 +124,12 @@ def main():
     # Extract zip
     with ZipFile(z) as zObject:
       zObject.extractall(path = root)
-    # Inject metadata to zip
-      inject_meta(z.replace('.zip',''))
+    extracted = z.replace('.zip','')
+    # Inject metadata to photos in extracted folder
+    inject_meta(extracted)
+    # Move photos to root
+    move_photos(extracted,root)
+    # Delete extracted folder
+    shutil.rmtree(extracted) #os.remove yields operation not permitted error!
 
 main()
