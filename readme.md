@@ -10,7 +10,7 @@ Powerful **Python script** designed to extract your iCloud Photo Library and upd
 
 We all know that the iCloud Photo Library can fill up quickly, and constantly purchasing more storage can become an expensive solution. However, there is a way to **avoid getting caught in an infinite pay-for-more storage loop**.
 
-As of April 2023, Apple provides an option to download your entire iCloud Photo Library as compressed zip files upon request. This is a fast and convenient way to download all your photos. (The other option is downloading your photos in batches of 100s; hard limit, through Icloud's web GUI). Once you have requested the compressed zip files, Apple will provide you with a link to download the files, which will allow you to easily access your entire photo library at once.
+As of April 2023, Apple provides an option to download your entire iCloud Photo Library as compressed zip files upon request via Data & Privacy portal (https://privacy.apple.com/). This is a fast and convenient way to download all your photos. (The other option is downloading your photos in batches of 100s; hard limit, through Icloud's web GUI). Once you have requested the compressed zip files, Apple will provide you with a link to download the files, which will allow you to easily access your entire photo library at once.
 
 ----
 
