@@ -61,5 +61,12 @@ After executing the tool you will get your photos uncompressed in the same folde
 
 ----
 
+## Next steps
+
+- Support for downloading zip files with some input credentials via API call
+- Support for cleaning up iCloud via API call
+
+----
+
 
 **Thank you for using iCloud Photo Library Extraction Tool!**
